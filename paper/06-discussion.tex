@@ -1,0 +1,20 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+
+\section{Discussion}
+\label{sec:discussion}
+
+The results support a bounded interpretation of \method{}: validation-controlled fusion of internal CNN distance spaces can improve average brain-MRI classification performance under the evaluated split protocol. The complete method achieved the highest mean test macro-F1 among the evaluated complete methods, while strong references such as MAXVAR-GCCA and MvDA remained competitive. This indicates that the observed gain should not be interpreted as a generic advantage of any internal-layer reuse strategy, but as evidence for the specific procedure evaluated here: validation-ranked layer selection, weighted distance fusion, and frozen distance-weighted kNN inference.
+
+The internal analyses clarify why the method is useful. Single-layer diagnostics showed that deep and final representations were strong on average, but earlier and middle layers also provided validation signal and were retained in some selected prefixes. The ablation further showed that using only the best validation-ranked layer was not sufficient on average, while uniform fusion of all available layers also remained below the complete method. This pattern suggests that the benefit is not explained simply by using more layers. Rather, it is consistent with the idea that complementary layer-wise metric views must be selected and aggregated under validation control.
+
+The selected configurations also show that \method{} behaves as a compact post-hoc model rather than as uncontrolled all-layer fusion. Across contexts, the method selected a small ranked prefix of layer views and used the selected distance weights only after freezing the validation-selected configuration. The frequent selection of very local neighborhoods suggests that the fused metric often produced useful nearest-neighbor structure, although this behavior should be tested further under additional seeds and external validation settings.
+
+The comparative results should also be read cautiously. Context-level analyses showed that the aggregate advantage was not uniform across all dataset-backbone contexts. Most paired comparisons were favorable or practically close under the predefined margin, but only a small number of paired differences remained statistically significant after Holm correction. This supports an aggregate performance claim, not a claim of universal superiority over every reference method in every context.
+
+Several limitations remain. First, patient-level separation was not verified from the available metadata, so the reported splits should be interpreted as image-level or file-level splits. Second, the main results are based on the available trained backbones and seed, and multi-seed evaluation is needed before making stronger stability claims. Third, the study does not establish clinical deployment readiness, external clinical validity, or biomarker-level interpretability of selected layers. Fourth, computational cost was not measured through latency, FLOPs, or memory usage; compactness was assessed only through the number of selected layer views. Finally, several literature methods were implemented as stage-level adaptations over the saved CNN embedding views, so they should be interpreted as principled reference implementations rather than full reproductions of the original pipelines.
+
+Future work should therefore prioritize patient-level or institution-level validation when metadata permit it, multi-seed robustness analysis, measured computational efficiency, and calibration analysis for methods with reliable probability outputs. It would also be useful to evaluate whether the selected layer prefixes and distance-weight patterns remain stable across external MRI cohorts, acquisition protocols, and larger backbone families.
+
+\end{document}

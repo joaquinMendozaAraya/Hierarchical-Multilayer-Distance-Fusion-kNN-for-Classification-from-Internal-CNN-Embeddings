@@ -1,0 +1,10 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This work presented \fullmethod{} (\method{}), a post-hoc method for brain tumor MRI classification that reuses internal CNN embeddings as layer-wise metric views. Instead of relying only on the softmax head or the final backbone embedding, \method{} ranks candidate internal layers on validation data, selects a compact multilayer prefix, fuses the corresponding distance spaces, and freezes the selected configuration before test evaluation. Across 45 brain-MRI dataset-backbone contexts, the method achieved the highest mean test macro-F1 among the evaluated complete methods. The design ablation indicates that validation-controlled multilayer aggregation improves on both best-single-layer selection and uniform all-layer distance fusion on average, suggesting that the main contribution is not simply the use of additional layers but the controlled selection and aggregation of complementary internal views. Context-level analyses support a cautious aggregate interpretation: the method was often favorable or practically close to the strongest validation-selected non-proposed reference, but corrected statistical significance was limited. Future work should extend the evaluation to multi-seed experiments, patient-level or external institutional validation, measured computational cost, and calibration analysis when probability outputs are available.
+
+\end{document}

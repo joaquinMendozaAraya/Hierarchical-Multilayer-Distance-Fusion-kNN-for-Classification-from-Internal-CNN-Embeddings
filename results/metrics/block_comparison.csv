@@ -1,0 +1,13 @@
+data_scope,block_id,block_label,metric,n_contexts,mean,std,bootstrap_ci95_low,bootstrap_ci95_high,selected_by,block_order
+brain_only,softmax,Softmax,test_accuracy,45,0.9385671733564482,0.02928693012872095,0.9301301218855453,0.9466350845503448,best validation macro-F1 inside block/context,0
+brain_only,last_layer,Final embedding / last layer,test_accuracy,45,0.9536803954119932,0.026052401350480144,0.9456893817724139,0.961163243071571,best validation macro-F1 inside block/context,1
+brain_only,multilayer,Multilayer competitors,test_accuracy,45,0.960990026280671,0.0222375974638478,0.9542439248475466,0.9673677945246897,best validation macro-F1 inside block/context,2
+brain_only,proposed,Proposed method,test_accuracy,45,0.9682912754679882,0.01644650164850245,0.9636140804385319,0.9730244474822783,best validation macro-F1 inside block/context,3
+brain_only,softmax,Softmax,test_balanced_accuracy,45,0.9337744215306447,0.030630175817342824,0.9249841016024889,0.942304792925566,best validation macro-F1 inside block/context,0
+brain_only,last_layer,Final embedding / last layer,test_balanced_accuracy,36,0.9502765095698662,0.02584607911753727,0.9421419751727709,0.9586015821454457,best validation macro-F1 inside block/context,1
+brain_only,multilayer,Multilayer competitors,test_balanced_accuracy,45,0.9521467850006998,0.024134495670649268,0.9451849644610626,0.9591365924361925,best validation macro-F1 inside block/context,2
+brain_only,proposed,Proposed method,test_balanced_accuracy,45,0.9596812622032057,0.022607338782628036,0.9530832620880474,0.9661295602957145,best validation macro-F1 inside block/context,3
+brain_only,softmax,Softmax,test_f1_macro,45,0.9325708161689985,0.029900097141677184,0.9239591475905111,0.9407668298495748,best validation macro-F1 inside block/context,0
+brain_only,last_layer,Final embedding / last layer,test_f1_macro,45,0.9470028431785552,0.024658557191161102,0.9395890497662388,0.9541546215798377,best validation macro-F1 inside block/context,1
+brain_only,multilayer,Multilayer competitors,test_f1_macro,45,0.9550267592096106,0.021750495495402346,0.9486286941128794,0.9613339963011366,best validation macro-F1 inside block/context,2
+brain_only,proposed,Proposed method,test_f1_macro,45,0.9616074460749805,0.018451065039019728,0.9563525971936604,0.9669231140080775,best validation macro-F1 inside block/context,3

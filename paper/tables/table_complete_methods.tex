@@ -1,0 +1,43 @@
+\begin{table*}[t]
+\caption{Complete aggregate method comparison grouped by method family.}
+\label{tab:complete_methods}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{p{3.1cm}p{7.1cm}rrrr}
+\toprule
+Method family & Method & $n$ & Acc. & Macro-F1 & Bal. acc. \\
+\midrule
+Direct CNN baseline & Softmax head & 45 & 0.9386 & 0.9326 & 0.9338 \\
+\addlinespace[2pt]
+Final-embedding classifiers & Validation-selected final classifier & 45 & 0.9534 & 0.9467 & 0.9499 \\
+ & kNN & 45 & 0.9537 & 0.9469 & 0.9516 \\
+ & Linear SVM & 45 & 0.9395 & 0.9323 & 0.9330 \\
+ & Random forest & 45 & 0.9300 & 0.9219 & 0.9126 \\
+ & Logistic regression & 45 & 0.9257 & 0.9185 & 0.9259 \\
+ & Diagonal GMM & 45 & 0.9191 & 0.9148 & 0.9102 \\
+ & XGBoost & 45 & 0.9199 & 0.9096 & 0.9003 \\
+ & Gaussian naive Bayes & 45 & 0.9130 & 0.9055 & 0.8894 \\
+\addlinespace[2pt]
+Multilayer controls & Raw concatenation + linear & 45 & 0.9409 & 0.9347 & 0.9305 \\
+ & Concatenation + PCA + linear & 45 & 0.9412 & 0.9352 & 0.9310 \\
+ & Uniform layer soft vote & 45 & 0.9224 & 0.9121 & 0.9005 \\
+ & Uniform kernel SVM & 45 & 0.9437 & 0.9369 & 0.9341 \\
+\addlinespace[2pt]
+Literature multilayer references & MLCFF-style fusion (Fradi et al., 2021)$^\dagger$ \cite{fradi2021multilayer} & 45 & 0.9416 & 0.9345 & 0.9314 \\
+ & Head2Toe-style fusion (Evci et al., 2022)$^\dagger$ \cite{evci2022head2toe} & 45 & 0.9352 & 0.9282 & 0.9258 \\
+ & EasyMKL$^\dagger$ & 45 & 0.9376 & 0.9307 & 0.9289 \\
+\addlinespace[2pt]
+Multiview references & MAXVAR-GCCA$^\dagger$ & 45 & 0.9584 & 0.9515 & 0.9496 \\
+ & GMLDA$^\dagger$ & 45 & 0.9426 & 0.9360 & 0.9320 \\
+ & MvDA$^\dagger$ & 45 & 0.9573 & 0.9504 & 0.9462 \\
+\addlinespace[2pt]
+Metric/prototype references & NCA + kNN$^\dagger$ & 45 & 0.9486 & 0.9415 & 0.9408 \\
+ & KMEx (Gautam et al., 2024) \cite{gautam2024kmex} & 45 & 0.9383 & 0.9328 & 0.9282 \\
+\addlinespace[2pt]
+This work & HMDF-kNN & 45 & 0.9683 & 0.9616 & 0.9597 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\scriptsize Each row averages 45 brain-MRI dataset-backbone contexts. Hyperparameters are selected by validation macro-F1 within each method and context. Individual final-embedding rows select the best hyperparameter setting for that classifier. $^\dagger$Stage-level adaptation over the saved CNN embedding views; complete configurations and per-context outputs are provided in the supplementary artifacts.
+\end{table*}

@@ -1,0 +1,6 @@
+dataset_id,dataset,classes,contexts,hmdf_macro_f1,reference_macro_f1,mean_delta,most_frequent_reference,selected_references,practical_w_t_l,statistical_w_ns_l,statistical_n,mean_selected_layers
+brain_tumor_mri_14c,Brain MRI 15C,15,9,0.9810290687256812,0.9743690114377637,0.006660057287917718,MAXVAR-GCCA/MvDA (3),MAXVAR-GCCA (3); MvDA (3); NCA + kNN (2); Last-layer selected classifier (1),6/3/0,1/7/0,8,2.6666666666666665
+brain_tumor_mri_17c,Brain MRI 17C,17,9,0.9841540974450383,0.9820557171320394,0.0020983803129988165,MAXVAR-GCCA (7),MAXVAR-GCCA (7); MvDA (1); NCA + kNN (1),4/4/1,0/9/0,9,3.0
+brain_tumor_mri_44c,Brain MRI 44C,44,9,0.9428278558488807,0.9414375758983259,0.001390279950554913,MAXVAR-GCCA (6),MAXVAR-GCCA (6); Last-layer selected classifier (1); NCA + kNN (1); MvDA (1),2/6/1,0/8/0,8,3.2222222222222223
+brain_tumor_mri_4c,Brain MRI 4C,4,9,0.94967110755032,0.9498411711187111,-0.00017006356839122105,Last-layer selected classifier/GMLDA (3),Last-layer selected classifier (3); GMLDA (3); EasyMKL (1); MLCFF-style fusion (1); Softmax head (1),0/9/0,0/6/0,6,2.4444444444444446
+sciencedb_brain_tumor_3c,ScienceDB 3C,3,9,0.9503551008049822,0.9311493278452289,0.019205772959753342,MAXVAR-GCCA (5),MAXVAR-GCCA (5); Last-layer selected classifier (2); MvDA (1); EasyMKL (1),7/2/0,1/6/0,7,2.5555555555555554

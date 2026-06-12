@@ -1,0 +1,60 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\onecolumn
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+\graphicspath{{figures/}{../figures/}}
+
+\section*{Supplementary Context-Level Robustness}
+
+The main paper reports aggregate performance and retains the context-level
+analysis as a robustness check. Within each dataset-backbone context, the
+non-proposed reference method was selected by validation macro-F1 before the
+frozen test comparison. Table~\ref{tab:dataset_summary} summarizes absolute
+macro-F1 by dataset, while Table~\ref{tab:context_outcomes} separates
+numerical, practical, and paired statistical interpretations.
+
+\input{tables/tableS01_dataset_summary}
+
+\input{tables/tableS02_context_outcomes}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS01_context_delta_heatmap}
+  \caption{Context-level test macro-F1 delta between HMDF-kNN and the
+  strongest validation-selected non-proposed reference method in the same
+  dataset-backbone context. Positive values favor HMDF-kNN. Symbols indicate
+  outcomes using a 0.005 practical margin. An asterisk marks a paired
+  bootstrap difference that remains significant after Holm correction among
+  contexts with aligned prediction artifacts.}
+  \label{fig:supp_context_heatmap}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS02_winning_context_confusion}
+  \caption{Row-normalized confusion matrices for the ScienceDB 3C
+  EfficientNet-B2 context used for class-level inspection. HMDF-kNN and
+  MAXVAR-GCCA were evaluated on the same frozen test samples. The context was
+  selected as the largest macro-F1 difference among the Holm-corrected
+  significant practical gains and is shown as an error-analysis example, not
+  as clinical validation.}
+  \label{fig:supp_confusion}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figS03_fused_distance_geometry}
+  \caption{Qualitative geometry for the same ScienceDB 3C EfficientNet-B2
+  context. The final embedding and best validation-ranked single layer are
+  projected with PCA. The fused panel applies classical multidimensional
+  scaling to the validation-selected weighted distance matrix. This
+  visualization is not used for model selection or quantitative evaluation.}
+  \label{fig:supp_geometry}
+\end{figure}
+
+\end{document}

@@ -1,0 +1,36 @@
+seed: 42
+
+hmdf_knn:
+  k_grid: [1, 3, 5, 7, 11]
+  max_views: 4
+  weight_powers: [0.5, 1.0, 2.0]
+  dirichlet_trials: 8
+  distance_chunk_size: 512
+
+selection:
+  primary_metric: macro_f1
+  tie_breakers:
+    - balanced_accuracy
+    - accuracy
+    - lower_summed_dimension
+  test_used_for_selection: false
+
+evaluation:
+  main_datasets:
+    - brain_tumor_mri_14c
+    - brain_tumor_mri_17c
+    - brain_tumor_mri_44c
+    - brain_tumor_mri_4c
+    - sciencedb_brain_tumor_3c
+  external_domain_control:
+    - ham10000_skin_7c
+  backbones:
+    - resnet18
+    - resnet34
+    - resnet50
+    - densenet121
+    - efficientnet_b0
+    - efficientnet_b2
+    - efficientnet_b3
+    - mobilenet_v3_large
+    - convnext_tiny

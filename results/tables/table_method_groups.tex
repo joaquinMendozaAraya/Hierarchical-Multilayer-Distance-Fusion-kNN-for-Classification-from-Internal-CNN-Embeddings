@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\caption{Compared method families.}
+\label{tab:method_groups}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{p{3.4cm}p{3.1cm}p{9.0cm}}
+\toprule
+Methods & Group & Role in the comparison \\
+\midrule
+Softmax head & Direct CNN baseline & Fine-tuned classifier output. \\
+Final-embedding selected classifier & Final embedding baseline & Validation-selected classical classifier over the final embedding. \\
+Concat, PCA, soft-vote, kernel controls & Multilayer controls & Non-proposed controls for all-layer concatenation, dimensionality reduction, decision fusion, and uniform kernels. \\
+MLCFF, Head2Toe, EasyMKL & Literature multilayer references & Stage-level adaptations using the same saved CNN embedding views. \\
+MAXVAR-GCCA, GMLDA, MvDA & Multiview references & Internal CNN layers treated as paired views of each image. \\
+NCA + kNN; KMEx & Metric/prototype references & Supervised metric projection or final-embedding prototype classification. \\
+HMDF-kNN & This work & Validation-ranked weighted fusion of layer-distance matrices followed by frozen kNN evaluation. \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\footnotesize External multilayer methods were adapted at stage level so that all methods used the same frozen CNN embedding views.
+\end{table*}

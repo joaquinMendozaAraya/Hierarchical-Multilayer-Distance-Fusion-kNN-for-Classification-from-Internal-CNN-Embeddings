@@ -1,0 +1,30 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+
+\section{Experimental Protocol}
+\label{sec:protocol}
+
+\subsection{Datasets and Backbones}
+
+The main evaluation uses five brain-tumor MRI datasets and treats HAM10000 as an external-domain control, not as part of the principal brain-MRI averages. Table~\ref{tab:datasets} summarizes the evaluated datasets. Available metadata support image-level or file-level splits; patient-level separation was not verified. Saved sample-path audits did not detect duplicated sample IDs across train, validation, and test.
+
+\input{tables/table_datasets}
+
+Nine CNN backbones were evaluated: ResNet-18, ResNet-34, ResNet-50 \cite{he2016resnet}, DenseNet-121 \cite{huang2017densenet}, EfficientNet-B0/B2/B3 \cite{tan2019efficientnet}, MobileNetV3-Large \cite{howard2019mobilenetv3}, and ConvNeXt-Tiny \cite{liu2022convnext}. Each dataset-backbone pair defines one context. The main brain-MRI analysis therefore contains 45 contexts.
+
+\subsection{Comparison Methods}
+
+The evaluation separates direct CNN baselines, final-embedding classifiers, multilayer controls, literature-inspired multilayer and multiview reference methods, post-hoc prototype references, and HMDF-kNN. Table~\ref{tab:method_groups} summarizes their role.
+
+\input{tables/table_method_groups}
+
+All post-hoc comparison methods were evaluated on the same saved embeddings, labels, datasets, backbones, and train/validation/test partitions. Transformations such as PCA, discriminant projections, prototype fitting, and kernel weights were fit on train data and selected using validation data. Test metrics were computed only after freezing the selected configuration. Methods originally defined over feature maps or different feature formats were implemented as stage-level adaptations using the available CNN embedding views. Stage-level adaptations, hyperparameter grids, and complete per-context outputs are documented in the supplementary artifacts and will be released with the code repository at \texttt{[GitHub repository placeholder]}.
+
+\subsection{Metrics and Selection Rules}
+
+The primary metric is macro-F1 because the evaluated datasets include class imbalance and multi-class settings. Accuracy and balanced accuracy are reported as secondary metrics. AUROC and AUPRC are not used as global ranking metrics because not every method produced calibrated probability outputs. Model selection uses validation macro-F1 with balanced accuracy and accuracy as tie-breakers. The test split is used only after the selected candidate is frozen.
+
+For the context-level comparison, the strongest non-proposed reference method is selected independently in each context using validation macro-F1 and the same validation tie-breakers. Numerical test differences are complemented by a practical equivalence margin of 0.005 macro-F1. Statistical comparisons use 2000 paired, class-stratified bootstrap resamples of the methods' predictions on identical test samples. Per-sample predictions were available for 38 of the 45 selected reference comparisons; two-sided bootstrap probabilities are therefore corrected across those 38 tests using the Holm procedure.
+
+\end{document}

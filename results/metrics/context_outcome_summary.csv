@@ -1,0 +1,5 @@
+criterion,n_contexts,hmdf_ahead,middle_label,indistinguishable,reference_ahead
+Numerical sign,45,28,Exact tie,0,17
+Practical margin (0.005),45,19,Practical tie,24,2
+Paired bootstrap 95% CI,38,10,Not significant,28,0
+Paired bootstrap + Holm,38,2,Not significant,36,0

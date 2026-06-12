@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\caption{Design ablation of HMDF-kNN aggregation strategy.}
+\label{tab:ablation}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{p{3.5cm}p{4.7cm}p{3.8cm}rr}
+\toprule
+Variant & Aggregation strategy & Layer selection & Mean layers & Mean test macro-F1 \\
+\midrule
+Best single layer & None & Best validation-ranked layer & 1.00 & 0.9560 \\
+All-layer uniform distance fusion & Uniform distance aggregation & All layers & 5.67 & 0.9582 \\
+Ranked-prefix uniform fusion & Uniform distance aggregation & Validation-ranked prefix & 2.49 & 0.9599 \\
+Ranked-prefix score-weighted fusion & Score-based distance aggregation & Validation-ranked prefix & 2.49 & 0.9599 \\
+Greedy score-weighted fusion & Score-based distance aggregation & Greedy selected subset & 2.56 & 0.9604 \\
+Greedy uniform fusion & Uniform distance aggregation & Greedy selected subset & 2.60 & 0.9606 \\
+HMDF-kNN & Validation-selected weighted distance aggregation & Validation-ranked prefix & 2.78 & 0.9616 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\footnotesize Results are averaged over 45 brain-MRI contexts. Rows summarize complete validation-selected design variants and may jointly differ in layer selection, aggregation, and $k$; they are not an isolated test of the weight family.
+\end{table*}

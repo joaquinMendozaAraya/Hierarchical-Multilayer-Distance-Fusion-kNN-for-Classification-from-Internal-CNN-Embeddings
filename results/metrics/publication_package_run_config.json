@@ -1,0 +1,14 @@
+{
+  "matrix82": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\experiments\\82_consolidated_results_summary",
+  "matrix80": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\experiments\\80_paper_result_matrices",
+  "raw78": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\experiments\\78_raw_literature_multidim_competitors",
+  "diag84": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\experiments\\84_winmax_internal_diagnostics",
+  "results_dir": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\results\\publication",
+  "figures_dir": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\figures\\publication",
+  "reports_dir": "C:\\Users\\jesqu\\Desktop\\Tesis\\Tesis_2026\\reports",
+  "n_bootstrap": 2000,
+  "seed": 42,
+  "skip_predictions": true,
+  "force_predictions": false,
+  "prediction_methods": ""
+}

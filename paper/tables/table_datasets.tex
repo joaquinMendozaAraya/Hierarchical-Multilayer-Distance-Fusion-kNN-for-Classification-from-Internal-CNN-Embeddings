@@ -1,0 +1,21 @@
+\begin{table*}[t]
+\caption{Datasets used in the evaluation.}
+\label{tab:datasets}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llrccc}
+\toprule
+Dataset & Role & Classes & Train/val/test & Total & Split \\
+\midrule
+Brain tumor MRI 15C & Brain MRI main & 15 & 3120/667/669 & 4456 & Image/file-level \\
+Brain tumor MRI 17C & Brain MRI main & 17 & 3111/668/669 & 4448 & Image/file-level \\
+Brain tumor MRI 44C & Brain MRI main & 44 & 3137/671/671 & 4479 & Image/file-level \\
+Brain tumor MRI 4C & Brain MRI main & 4 & 4760/840/1600 & 7200 & Image/file-level \\
+ScienceDB brain tumor 3C & Brain MRI main & 3 & 2145/459/460 & 3064 & Image/file-level \\
+HAM10000 skin 7C control & External control & 7 & 7010/1502/1503 & 10015 & Image/file-level \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\footnotesize Patient-level separation was not verified from available metadata; no duplicated saved sample IDs were detected across splits.
+\end{table*}

@@ -1,0 +1,310 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+
+\section{Proposed Method}
+\label{sec:method}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig01_method_pipeline}
+\caption{
+Overview of \method{}.
+A ResNet-18 backbone is shown for illustration as a representative feature extractor; the same post-hoc protocol is applied to all evaluated backbones.
+The MRI input is passed through the stem, residual stages, global average pooling, and final embedding layer.
+After supervised fine-tuning, the backbone is frozen and internal representations from early, mid, deep, and final stages are extracted as candidate layer views.
+Spatial activations are pooled when necessary, and each candidate embedding is L2-normalized independently.
+Validation-only model selection evaluates each single-layer view with distance-weighted kNN, ranks layers by validation macro-F1 with balanced-accuracy and accuracy tie-breakers, constructs ranked prefixes, searches candidate fusion rules, and selects the neighborhood size \(k\).
+The selected layer subset \(S\), distance weights \(w\), and neighborhood size \(k\) define the weighted multilayer distance \(D_w(i,j)\).
+This frozen configuration is then used for distance-weighted kNN prediction on the test split, which is evaluated only once after model selection.
+}
+\label{fig:method_pipeline}
+\end{figure*}
+
+
+\subsection{Overview}
+
+This section presents Hierarchical Multilayer Distance Fusion kNN (HMDF-kNN), a post-hoc method for constructing a distance-based classifier from internal CNN embeddings. The method is based on the idea that each internal layer of a trained CNN induces a different metric view of the same image set. Instead of assuming that the final embedding is sufficient, or concatenating all internal representations into a single high-dimensional vector, HMDF-kNN selects a compact set of internal views using validation data and combines their distances before nearest-neighbor voting.
+
+The procedure has five stages, matching the pipeline in Fig.~\ref{fig:method_pipeline}. First, a CNN backbone is fine-tuned using the standard supervised training pipeline. Second, after fine-tuning, the backbone is frozen and candidate internal embeddings are extracted for the training, validation, and test splits. Third, candidate layers are scored and ranked on validation data, ranked prefixes are constructed, and candidate fusion rules and neighborhood sizes are searched. Fourth, the selected layer views are combined through weighted multilayer distance fusion. Fifth, the selected layer subset, distance weights, and kNN neighborhood size are frozen before a single final evaluation on the test split.
+
+This design separates representation selection from final test evaluation. The test split is not used to select layers, distance weights, neighborhood size, or any other hyperparameter.
+
+\subsection{Problem Setup}
+
+Let
+\begin{equation}
+  D = D_{\mathrm{tr}} \cup D_{\mathrm{val}} \cup D_{\mathrm{te}}
+\end{equation}
+denote the complete dataset partitioned into training, validation, and test splits.
+
+Here, \(D_{\mathrm{tr}}\) is used to train the CNN backbone and to provide the reference samples for the post-hoc kNN classifier, \(D_{\mathrm{val}}\) is used to select layers, weights, and hyperparameters, and \(D_{\mathrm{te}}\) is reserved for final evaluation. The three splits are disjoint.
+
+Each sample is denoted by
+\begin{equation}
+  (x_i,y_i),
+\end{equation}
+where \(x_i\) is an MRI image and \(y_i \in \{1,\ldots,C\}\) is its class label, with \(C\) denoting the number of classes in the dataset.
+
+A CNN backbone \(f_{\theta}\) is first fine-tuned on \(D_{\mathrm{tr}}\) using the standard supervised training pipeline. During the post-hoc stage, the parameters \(\theta\) are kept fixed. Therefore, HMDF-kNN does not retrain the CNN backbone and does not modify its learned feature extractor.
+
+Let the set of candidate internal layers be
+\begin{equation}
+  \mathcal{L} = \{\ell_1,\ell_2,\ldots,\ell_L\},
+\end{equation}
+where \(\mathcal{L}\) is the set of available CNN layers or hooks, \(\ell\) denotes one candidate layer, and \(L\) is the total number of candidate layers.
+
+For an image \(x_i\), layer \(\ell\) produces an embedding
+\begin{equation}
+  z_{\ell}(x_i) \in \mathbb{R}^{d_{\ell}},
+\end{equation}
+where \(z_{\ell}(x_i)\) is the vector representation of image \(x_i\) at layer \(\ell\), and \(d_{\ell}\) is the dimensionality of that layer embedding. If the captured layer output is spatial, global average pooling is applied to obtain a vector; if the output is already a vector, it is used directly.
+
+The goal is to construct a classifier from internal embeddings while avoiding two weak extremes. A single top layer may ignore complementary intermediate information, whereas using all layers without control can increase dimensionality, redundancy, and distance instability. HMDF-kNN therefore treats layer selection and distance fusion as validation-controlled model-selection steps.
+
+\subsection{Layer Views and Normalization}
+
+For every candidate layer, train, validation, and test embeddings are extracted from the same frozen backbone. Each layer view is L2-normalized independently:
+\begin{equation}
+  \tilde{z}_{\ell}(x_i)
+  =
+  \frac{z_{\ell}(x_i)}
+  {\max(\|z_{\ell}(x_i)\|_2,\epsilon)} .
+  \label{eq:l2_normalization}
+\end{equation}
+
+In Eq.~\eqref{eq:l2_normalization}, \(z_{\ell}(x_i)\) is the original embedding of image \(x_i\) at layer \(\ell\), \(\tilde{z}_{\ell}(x_i)\) is the normalized embedding, \(\|\cdot\|_2\) is the Euclidean norm, and \(\epsilon>0\) prevents division by zero.
+
+This normalization makes Euclidean distances from different layer views more comparable before fusion. It does not fit a transformation on validation or test data; it only rescales each sample embedding to unit norm.
+
+\subsection{Validation Ranking of Individual Layers}
+
+Each normalized layer is first evaluated as a standalone representation. For every \(\ell\in\mathcal{L}\) and each
+\begin{equation}
+  k \in \mathcal{K} = \{1,3,5,7,11\},
+\end{equation}
+a distance-weighted kNN classifier is fitted on \(D_{\mathrm{tr}}\) and evaluated on \(D_{\mathrm{val}}\).
+
+For each pair \((\ell,k)\), the validation score is
+\begin{equation}
+  s_{\ell,k}
+  =
+  F1_{\mathrm{macro}}
+  \left(D_{\mathrm{val}}; h_{\ell,k}\right),
+\end{equation}
+where \(s_{\ell,k}\) is the validation macro-F1 obtained by using layer \(\ell\) with neighborhood size \(k\), and \(h_{\ell,k}\) denotes the corresponding distance-weighted kNN classifier.
+
+For each layer, the best neighborhood size is selected by validation macro-F1, with validation balanced accuracy and validation accuracy used as tie-breakers. If all metrics are tied, the smaller \(k\) is preferred. The resulting layer score is
+\begin{equation}
+  s_{\ell} = s_{\ell,k_{\ell}^{\star}},
+\end{equation}
+where \(k_{\ell}^{\star}\) is the validation-selected neighborhood size for layer \(\ell\).
+
+Layers are then ranked by their best validation macro-F1, again using balanced accuracy and accuracy as tie-breakers. The resulting ranking is denoted by
+\begin{equation}
+  \pi = (\pi_1,\pi_2,\ldots,\pi_L),
+\end{equation}
+where \(\pi_1\) is the highest-ranked layer, \(\pi_2\) is the second highest-ranked layer, and so on. This ranking is not interpreted as a clinical explanation of the layer. It is used only to restrict the candidate set for downstream fusion.
+
+\subsection{Ranked-Prefix Distance Fusion}
+
+Given the validation ranking \(\pi\), HMDF-kNN constructs ranked layer prefixes:
+\begin{equation}
+  S_m = \{\pi_1,\ldots,\pi_m\},
+  \quad
+  m=1,\ldots,\min(R,L).
+  \label{eq:ranked_prefix}
+\end{equation}
+
+In Eq.~\eqref{eq:ranked_prefix}, \(S_m\) is the candidate subset containing the top \(m\) validation-ranked layers, \(R\) is the maximum prefix length, and \(L\) is the total number of candidate layers. In the evaluated implementation, \(R=4\). This keeps the candidate family compact and avoids turning the method into uncontrolled all-layer fusion.
+
+For a selected prefix \(S_m\), the fused distance between a query image \(x_i\) and a training image \(x_j\) is
+\begin{equation}
+  D_w(i,j)
+  =
+  \sum_{\ell\in S_m}
+  w_{\ell}
+  \left\|
+  \tilde{z}_{\ell}(x_i)
+  -
+  \tilde{z}_{\ell}(x_j)
+  \right\|_2 .
+  \label{eq:fused_distance}
+\end{equation}
+
+In Eq.~\eqref{eq:fused_distance}, \(D_w(i,j)\) is the fused distance between images \(x_i\) and \(x_j\), \(w_{\ell}\) is the non-negative contribution of layer \(\ell\), and \(\tilde{z}_{\ell}(x_i)\) and \(\tilde{z}_{\ell}(x_j)\) are the L2-normalized embeddings of the two images at layer \(\ell\).
+
+The weights satisfy
+\begin{equation}
+  w_{\ell}\geq 0,
+  \quad
+  \sum_{\ell\in S_m} w_{\ell}=1.
+\end{equation}
+
+Thus, each weight controls the contribution of one internal layer to the final fused distance.
+
+\subsection{Candidate Distance-Fusion Weights}
+
+For each ranked prefix \(S_m\), HMDF-kNN evaluates a compact family of candidate distance-fusion weights. The candidate family includes one uniform weighting rule, three deterministic validation-score weighting rules, and eight reproducible Dirichlet-sampled weight vectors.
+
+The uniform rule assigns equal contribution to every selected layer:
+\begin{equation}
+  w_{\ell}^{\mathrm{uni}}
+  =
+  \frac{1}{|S_m|},
+  \quad
+  \ell \in S_m,
+\end{equation}
+where \(|S_m|\) is the number of layers in prefix \(S_m\).
+
+The validation-score weighting rules are defined as
+\begin{equation}
+  w_{\ell}^{(p)}
+  =
+  \frac{(\max(s_{\ell},10^{-6}))^p}
+  {\sum_{r\in S_m}(\max(s_r,10^{-6}))^p},
+  \quad
+  p\in\{0.5,1,2\}.
+  \label{eq:score_weights}
+\end{equation}
+
+In Eq.~\eqref{eq:score_weights}, \(w_{\ell}^{(p)}\) is the score-based weight assigned to layer \(\ell\), \(s_{\ell}\) is the validation macro-F1 score of layer \(\ell\), and the lower bound \(10^{-6}\) prevents a zero score from producing a degenerate weight. The exponent \(p\) controls how strongly higher-scoring layers are emphasized. Values \(p<1\) produce more balanced weights, while values \(p>1\) assign more emphasis to stronger validation-ranked layers.
+
+In addition to these deterministic weights, HMDF-kNN evaluates reproducible Dirichlet-sampled candidates. For a selected prefix \(S_m\), the Dirichlet concentration parameter for layer \(\ell\) is computed as
+\begin{equation}
+  \alpha_{\ell}
+  =
+  \mathrm{clip}
+  \left(
+  \frac{s_{\ell}^{+}}
+  {\bar{s}_{S_m}^{+}},
+  0.25,
+  8.0
+  \right),
+  \quad \ell \in S_m.
+  \label{eq:dirichlet_alpha}
+\end{equation}
+
+In Eq.~\eqref{eq:dirichlet_alpha}, \(s_{\ell}^{+}=\max(s_{\ell},10^{-6})\), \(\bar{s}_{S_m}^{+}=|S_m|^{-1}\sum_{r\in S_m}s_r^{+}\), and \(\alpha_{\ell}\) is the resulting concentration parameter for layer \(\ell\). The function \(\mathrm{clip}(\cdot,0.25,8.0)\) restricts each concentration parameter to the interval \([0.25,8.0]\).
+
+For each prefix, eight candidate weight vectors are sampled as
+\begin{equation}
+  w \sim \mathrm{Dirichlet}(\alpha),
+  \label{eq:dirichlet_weights}
+\end{equation}
+where \(\alpha = (\alpha_{\ell})_{\ell\in S_m}\) is the vector of concentration parameters. The sampling uses one NumPy random generator initialized with seed 42 before the prefix search, making the candidate sequence reproducible. Candidate weight vectors that are identical after rounding to eight decimal places are evaluated only once.
+
+The purpose of this candidate family is not to learn a continuous fusion model, but to evaluate a controlled and reproducible set of plausible distance-fusion rules under validation control.
+
+For each prefix and weight vector, the neighborhood size \(k\) is again searched over \(\mathcal{K}=\{1,3,5,7,11\}\) using validation data only.
+
+\subsection{Distance-Weighted kNN Prediction}
+
+For a query image \(x_i\), let \(\mathcal{N}_{k}^{w}(x_i)\) denote the set of indices of the \(k\) nearest training samples under the fused distance \(D_w\). Each neighbor votes with a weight inversely proportional to its fused distance:
+\begin{equation}
+  a_j(x_i)
+  =
+  \frac{1}{\max(D_w(i,j),10^{-8})},
+  \quad
+  j\in\mathcal{N}_{k}^{w}(x_i).
+  \label{eq:neighbor_weight}
+\end{equation}
+
+In Eq.~\eqref{eq:neighbor_weight}, \(a_j(x_i)\) is the voting weight of training sample \(x_j\) for query \(x_i\), \(D_w(i,j)\) is the fused distance between them, and the lower bound \(10^{-8}\) prevents division by zero.
+
+The class vote for class \(c\) is
+\begin{equation}
+  V_c(x_i)
+  =
+  \sum_{j\in\mathcal{N}_{k}^{w}(x_i)}
+  a_j(x_i)\,
+  \mathbb{I}(y_j=c),
+  \label{eq:class_vote}
+\end{equation}
+where \(V_c(x_i)\) is the accumulated vote for class \(c\), \(y_j\) is the label of training sample \(x_j\), and \(\mathbb{I}(y_j=c)\) is an indicator function equal to 1 when \(y_j=c\) and 0 otherwise.
+
+The predicted class is
+\begin{equation}
+  \hat{y}(x_i)
+  =
+  \arg\max_{c\in\{1,\ldots,C\}}
+  V_c(x_i).
+  \label{eq:prediction}
+\end{equation}
+
+This rule preserves the local-neighborhood interpretation of kNN while allowing multiple internal CNN layers to contribute to the distance used for neighbor retrieval.
+
+\subsection{Validation Selection and Frozen Test Evaluation}
+
+Each candidate configuration is defined as
+\begin{equation}
+  M = (S_m,w,k),
+\end{equation}
+where \(S_m\) is a ranked layer prefix, \(w\) is a distance-fusion weight vector, and \(k\) is the kNN neighborhood size.
+
+Each candidate is evaluated on \(D_{\mathrm{val}}\). The final candidate is selected lexicographically by validation macro-F1, validation balanced accuracy, validation accuracy, and smaller summed layer dimensionality:
+\begin{equation}
+  M^{\star}
+  =
+  \arg\max_M
+  \left[
+  F1_{\mathrm{macro}},
+  \mathrm{BalAcc},
+  \mathrm{Acc},
+  -\mathrm{Dim}(S_m)
+  \right]_{\mathrm{val}}.
+  \label{eq:model_selection}
+\end{equation}
+
+In Eq.~\eqref{eq:model_selection}, \(M^{\star}\) is the selected configuration, \(F1_{\mathrm{macro}}\) is validation macro-F1, \(\mathrm{BalAcc}\) is validation balanced accuracy, \(\mathrm{Acc}\) is validation accuracy, and \(\mathrm{Dim}(S_m)\) is the summed dimensionality of the selected layer views:
+\begin{equation}
+  \mathrm{Dim}(S_m)
+  =
+  \sum_{\ell\in S_m} d_{\ell}.
+\end{equation}
+
+The negative sign in \(-\mathrm{Dim}(S_m)\) means that, when validation performance is tied, the structurally smaller configuration is preferred. Because HMDF-kNN fuses distances rather than concatenating embeddings, \(\mathrm{Dim}(S_m)\) is used only as a complexity tie-breaker, not as the dimensionality of a final concatenated vector.
+
+After \(M^{\star}\) is selected, the layer subset, distance weights, and neighborhood size are frozen. Test metrics are then computed once on \(D_{\mathrm{te}}\). No test labels are used during layer ranking, weight selection, neighborhood-size selection, or any other model-selection step.
+
+\Needspace{28\baselineskip}
+\subsection{Algorithmic Summary}
+
+\begin{algorithm}[H]
+\caption{HMDF-kNN validation-controlled multilayer distance fusion}
+\label{alg:proposed}
+\begin{algorithmic}[1]
+\Require Frozen backbone \(f_{\theta}\), candidate layers \(\mathcal{L}\), splits \(D_{\mathrm{tr}},D_{\mathrm{val}},D_{\mathrm{te}}\), neighborhood grid \(\mathcal{K}\), maximum prefix length \(R\)
+\Ensure Frozen classifier configuration and test predictions
+
+\State Extract embeddings \(z_{\ell}(x)\) for all \(\ell\in\mathcal{L}\) and all splits
+\State L2-normalize every layer view independently
+
+\For{each layer \(\ell\in\mathcal{L}\)}
+  \For{each \(k\in\mathcal{K}\)}
+    \State Fit distance-weighted kNN on \(D_{\mathrm{tr}}\) using layer \(\ell\)
+    \State Evaluate macro-F1, balanced accuracy, and accuracy on \(D_{\mathrm{val}}\)
+  \EndFor
+  \State Keep the best layer-specific \(k\) and validation score \(s_{\ell}\)
+\EndFor
+
+\State Rank layers by validation macro-F1 with balanced-accuracy and accuracy tie-breakers
+\State Construct ranked prefixes \(S_m=\{\pi_1,\ldots,\pi_m\}\), for \(m\leq \min(R,L)\)
+
+\For{each ranked prefix \(S_m\)}
+  \For{each candidate weight vector \(w\)}
+    \State Build \(D_w\) using Eq.~\eqref{eq:fused_distance}
+    \For{each \(k\in\mathcal{K}\)}
+      \State Evaluate distance-weighted kNN on \(D_{\mathrm{val}}\)
+    \EndFor
+  \EndFor
+\EndFor
+
+\State Select the best candidate by validation macro-F1, balanced accuracy, accuracy, and smaller summed dimensionality
+\State Freeze selected layers, weights, and \(k\)
+\State Evaluate the frozen classifier once on \(D_{\mathrm{te}}\)
+
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}

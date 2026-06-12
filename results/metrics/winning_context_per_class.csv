@@ -1,0 +1,7 @@
+dataset_id,backbone,method,class,precision,recall,f1,support
+sciencedb_brain_tumor_3c,efficientnet_b2,HMDF-kNN,Glioma,0.9626168224299065,0.9626168224299065,0.9626168224299065,214
+sciencedb_brain_tumor_3c,efficientnet_b2,HMDF-kNN,Meningioma,0.9719626168224299,0.9811320754716981,0.9765258215962441,106
+sciencedb_brain_tumor_3c,efficientnet_b2,HMDF-kNN,Pituitary tumor,0.9568345323741008,0.95,0.953405017921147,140
+sciencedb_brain_tumor_3c,efficientnet_b2,MAXVAR-GCCA,Glioma,0.9128440366972477,0.9299065420560748,0.9212962962962964,214
+sciencedb_brain_tumor_3c,efficientnet_b2,MAXVAR-GCCA,Meningioma,0.9514563106796117,0.9245283018867925,0.9377990430622011,106
+sciencedb_brain_tumor_3c,efficientnet_b2,MAXVAR-GCCA,Pituitary tumor,0.9280575539568345,0.9214285714285714,0.9247311827956989,140

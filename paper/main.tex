@@ -1,0 +1,72 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage{booktabs}
+\usepackage[section]{placeins}
+\usepackage{float}
+\usepackage{flafter}
+\usepackage{dblfloatfix}
+\usepackage{needspace}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.jpeg}
+\graphicspath{{./}{./figures/}}
+\usepackage{url}
+\usepackage{subfig}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{subfiles}
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue,linkcolor=blue]{hyperref}
+
+\newcommand{\method}{HMDF-kNN}
+\newcommand{\fullmethod}{Hierarchical Multilayer Distance Fusion kNN}
+\newcommand{\Dtr}{\mathcal{D}_{tr}}
+\newcommand{\Dval}{\mathcal{D}_{val}}
+\newcommand{\Dte}{\mathcal{D}_{te}}
+\newcommand{\Z}{\mathcal{Z}}
+\newcommand{\Lset}{\mathcal{L}}
+
+\title{Hierarchical Multilayer Distance Fusion kNN for Brain Tumor MRI Classification from Internal CNN Embeddings}
+
+\author{
+  Joaquin~Mendoza,
+  and~Alejandro~Veloz%
+  \thanks{J. Mendoza, and A. Veloz are with the School of Biomedical Engineering, Universidad de Valparaiso, Chile. Correspondence: \href{mailto:joaquin.mendoza@uv.cl}{joaquin.mendoza@uv.cl}.}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Brain tumor MRI classification with convolutional neural networks commonly relies on either the softmax head or the final backbone embedding. This convention is practical, but it treats the last representation as the only downstream view even though internal CNN layers encode a hierarchy of visual abstractions. This paper proposes \fullmethod{} (\method{}), a post-hoc method that constructs a compact multilayer distance representation from a fine-tuned CNN without retraining the backbone. Candidate internal embeddings are L2-normalized, evaluated as single-layer metric views on validation data, ranked by validation macro-F1 with balanced-accuracy and accuracy tie-breakers, and combined through validation-selected weighted distance fusion. The selected layer subset, distance weights, and kNN neighborhood size are then frozen before test evaluation. Across 45 brain-tumor MRI dataset-backbone contexts, \method{} achieved the highest mean test macro-F1 among the evaluated complete methods (0.9616), compared with 0.9550 for multilayer reference methods, 0.9470 for final-embedding classifiers, and 0.9326 for the softmax head. Design ablations supported validation-guided multilayer aggregation over best-single-layer selection (0.9560) and uniform all-layer distance fusion (0.9582), suggesting that the gain is not explained only by using more layers, but by selecting and aggregating complementary layer-wise distance spaces under validation control. Context-level analyses against the strongest validation-selected non-proposed reference method were mostly favorable or practically close under a 0.005 macro-F1 margin. Among 38 contexts with paired prediction artifacts, bootstrap tests with Holm correction identified two significant gains and no significant losses. These results support a bounded aggregate advantage for validation-controlled multilayer distance fusion, rather than a claim of uniform superiority across all dataset-backbone contexts.
+\end{abstract}
+
+
+\begin{IEEEkeywords}
+Brain tumor MRI, transfer learning, internal embeddings, multilayer fusion, k-nearest neighbors, metric learning, representation learning, Machine-Learning.
+\end{IEEEkeywords}
+
+\IEEEpeerreviewmaketitle
+
+\subfile{01-introduction.tex}
+\subfile{02-related-work.tex}
+\subfile{03-proposed-method.tex}
+\subfile{04-experimental-protocol.tex}
+\subfile{05-results.tex}
+\subfile{06-discussion.tex}
+\subfile{07-conclusion.tex}
+
+\ifCLASSOPTIONcaptionsoff
+  \newpage
+\fi
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,Bibliography}
+
+\vfill
+
+\end{document}

@@ -1,0 +1,23 @@
+family,method_id,method_tex,source_tex,input_representation,n,accuracy,macro_f1,balanced_accuracy
+Direct CNN baseline,softmax_full_finetuned,Softmax head,CNN classifier head,Native class logits,45.0,0.9385671733564482,0.9325708161689985,0.9337744215306445
+Final-embedding classifiers,last_layer_selected_classifier,Validation-selected final classifier,This study,Final CNN embedding,45.0,0.9533748398564377,0.9466947984542218,0.9498945651254217
+Final-embedding classifiers,final_knn,kNN,Cover and Hart (1967) \cite{cover1967nearest},Final CNN embedding,45.0,0.9537137393647063,0.9468933514258776,0.9515766035432139
+Final-embedding classifiers,final_linear_svm,Linear SVM,Cortes and Vapnik (1995) \cite{cortes1995svm},Final CNN embedding,45.0,0.939535213670876,0.9322512178474851,0.9330361083742973
+Final-embedding classifiers,final_random_forest,Random forest,Breiman (2001) \cite{breiman2001random},Final CNN embedding,45.0,0.9300068125093244,0.9218736560571642,0.9126383389205085
+Final-embedding classifiers,final_logreg,Logistic regression,Classical classifier,Final CNN embedding,45.0,0.92568306314409,0.9185281239545489,0.9258640473130783
+Final-embedding classifiers,final_gmm_diag,Diagonal GMM,"EM/GMM \cite{dempster1977em,chopin2024gmm}",Final CNN embedding,45.0,0.919067554257522,0.9148432815521356,0.9101962907801575
+Final-embedding classifiers,final_xgboost,XGBoost,Chen and Guestrin (2016) \cite{chen2016xgboost},Final CNN embedding,45.0,0.9199269649508971,0.9096000462790516,0.9002500921996249
+Final-embedding classifiers,final_gaussian_nb,Gaussian naive Bayes,Classical classifier,Final CNN embedding,45.0,0.9130099374981254,0.905542692086623,0.8894497475739508
+Multilayer controls,raw_concat_linear,Raw concatenation + linear,This study,All layer embeddings,45.0,0.9408815684648322,0.9347343246079783,0.9304862684560041
+Multilayer controls,concat_pca_linear,Concatenation + PCA + linear,This study,All layer embeddings,45.0,0.9411754066508705,0.935201263591522,0.9310109648668501
+Multilayer controls,uniform_layer_softvote,Uniform layer soft vote,This study,Layer-level decisions,45.0,0.92238822987177,0.9120899158282828,0.9004855161384485
+Multilayer controls,uniform_kernel_svm,Uniform kernel SVM,SVM \cite{cortes1995svm},Layer-wise kernels,45.0,0.9437021723644343,0.9368760651820192,0.9340664067213765
+Literature multilayer references,fradi_mlcff,"MLCFF-style fusion (Fradi et al., 2021)$^\dagger$ \cite{fradi2021multilayer}",Fradi et al. (2021) \cite{fradi2021multilayer},Stage embeddings,45.0,0.941568314489806,0.9345497293050014,0.9313856755541555
+Literature multilayer references,head2toe,"Head2Toe-style fusion (Evci et al., 2022)$^\dagger$ \cite{evci2022head2toe}",Evci et al. (2022) \cite{evci2022head2toe},Stage embeddings,45.0,0.9352465474007349,0.9282483292400711,0.9257768536422252
+Literature multilayer references,easymkl,EasyMKL$^\dagger$,Aiolli and Donini (2015) \cite{aiolli2015easymkl},Layer-wise kernels,45.0,0.9376356980546059,0.9307031493107474,0.9289321860273366
+Multiview references,maxvar_gcca,MAXVAR-GCCA$^\dagger$,"Carroll (1968); Kettenring (1971) \cite{carroll1968gca,kettenring1971canonical}",Paired layer views,45.0,0.9584473119272078,0.951475018095879,0.9496006851861165
+Multiview references,gmlda,GMLDA$^\dagger$,Sharma et al. (2012) \cite{sharma2012gma},Paired layer views,45.0,0.9425661172486183,0.9360480863602769,0.9320283779438054
+Multiview references,mvda,MvDA$^\dagger$,Kan et al. (2016) \cite{kan2016mvda},Paired layer views,45.0,0.9572830198182793,0.9504274741448231,0.9462219209363593
+Metric/prototype references,concat_nca_knn,NCA + kNN$^\dagger$,Goldberger et al. (2004) \cite{goldberger2004nca},Concatenated layer views,45.0,0.9486482963004825,0.9415347610493436,0.9407840343275178
+Metric/prototype references,kmex_final_embedding,"KMEx (Gautam et al., 2024) \cite{gautam2024kmex}",Gautam et al. (2024) \cite{gautam2024kmex},Final CNN embedding,45.0,0.9383303381091513,0.9328233344518339,0.9282381624013637
+This work,proposed_method,HMDF-kNN,This work,Selected layer distances,45.0,0.9682912754679881,0.9616074460749805,0.9596812622032055

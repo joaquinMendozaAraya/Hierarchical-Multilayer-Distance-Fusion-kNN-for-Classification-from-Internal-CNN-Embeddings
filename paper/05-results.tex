@@ -1,0 +1,153 @@
+\documentclass[main.tex]{subfiles}
+
+\begin{document}
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Internal Layer Behavior}
+
+Before evaluating the complete method, we examined whether internal CNN
+layers provided useful candidate metric views under the validation protocol.
+Each layer was evaluated independently with distance-weighted kNN, and
+validation macro-F1 was used only to characterize and rank the candidate
+views. Because the backbones expose different numbers of hooks, layer
+positions were normalized within each architecture and grouped as early,
+middle, deep, or final.
+
+Figure~\ref{fig:internal_layers}A reports standalone validation performance
+after first averaging layers within each depth group and context. Mean
+macro-F1 increased from 0.8920 for early views to 0.9666 for deep views,
+while final views reached 0.9582. Deep and final representations were strong
+on average, but early and middle views also provided useful validation
+signals. Figure~\ref{fig:internal_layers}B shows that these earlier views
+also appeared in a subset of the validation-selected prefixes. These
+diagnostics support treating internal layers as candidate metric views; they
+are not test-set performance claims or clinical explanations.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{fig02_internal_layer_diagnostics}
+  \caption{Internal-layer diagnostics over 45 brain-MRI dataset-backbone
+  contexts. Panel A shows standalone validation macro-F1 by normalized CNN
+  depth group. Layer scores are first averaged within each depth group and
+  context so that architectures contribute equally. Panel B counts the
+  selected layer views appearing in validation-selected HMDF-kNN prefixes.
+  These diagnostics describe validation behavior and are not test-set
+  performance claims.}
+  \label{fig:internal_layers}
+\end{figure*}
+
+\subsection{Selected HMDF-kNN Configurations}
+
+Figure~\ref{fig:selected_configuration} characterizes the complete
+configurations selected by validation. HMDF-kNN selected one layer in 6
+contexts, two in 11, three in 15, and four in 13. The neighborhood size was
+$k=1$ in 41 contexts. Uniform, deterministic score-based, and finite
+reproducible Dirichlet candidate weights were selected in 7, 2, and 36
+contexts, respectively. These frequencies show that validation controls the
+number of metric views, the neighborhood size, and the distance-weight rule
+rather than applying one fixed configuration to every dataset-backbone
+context. They describe classifier behavior and should not be interpreted as
+clinical explanations of tumor appearance.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{fig03_selected_configuration}
+  \caption{Validation-selected HMDF-kNN configurations over 45 brain-MRI
+  contexts. Panel A shows the selected ranked-prefix length, Panel B the
+  selected kNN neighborhood size, and Panel C the selected distance-weight
+  family. Score-based weights group deterministic validation-score weighting
+  rules; Dirichlet groups the finite reproducible candidate set evaluated for
+  each prefix.}
+  \label{fig:selected_configuration}
+\end{figure*}
+
+\subsection{Design Ablation of the HMDF-kNN Aggregation Strategy}
+
+Table~\ref{tab:ablation} studies the internal aggregation design rather than
+context-level wins or losses. The best validation-ranked single layer reached
+0.9560 mean test macro-F1. Uniform all-layer distance fusion increased the
+mean to 0.9582, indicating that multilayer aggregation can be beneficial.
+However, blindly aggregating every available layer remained below the
+validation-ranked prefix variants and the complete HMDF-kNN configuration.
+Ranked-prefix and greedy constructions reached 0.9599--0.9606, while the
+complete method reached 0.9616 using an average of 2.78 layer views.
+
+The pattern suggests that the aggregate result is not explained only by
+adding more layers. Instead, it is consistent with selecting and aggregating
+complementary layer-wise distance spaces under validation control. Because
+the variants may jointly change layer selection, aggregation, and $k$, this
+table should not be interpreted as an isolated causal test of the weight
+family.
+
+\input{tables/table_ablation_summary}
+
+\subsection{Aggregate Comparison by Method Family}
+
+After characterizing the internal behavior and aggregation design of
+HMDF-kNN, we compared the complete frozen method against external reference
+families. Figure~\ref{fig:block_macro_f1} reports mean test macro-F1 over the
+45 brain-MRI contexts. The softmax head reached 0.9326,
+validation-selected final-embedding classifiers reached 0.9470, multilayer
+reference methods reached 0.9550, and HMDF-kNN reached 0.9616. These values
+show a favorable aggregate progression toward representation-aware post-hoc
+methods, but do not imply uniform superiority in every context.
+
+\begin{figure*}[!t]
+  \centering
+  \begin{minipage}{0.64\textwidth}
+    \centering
+    \includegraphics[width=0.76\linewidth]{fig04_block_macro_f1}
+    \caption{Mean test macro-F1 by method family over 45 brain-MRI
+    dataset-backbone contexts. Error bars indicate 95\% bootstrap confidence
+    intervals across contexts. For each non-proposed family and context, the
+    reported method is selected by validation macro-F1. HAM10000 is excluded.}
+    \label{fig:block_macro_f1}
+  \end{minipage}
+\end{figure*}
+
+\subsection{Complete Aggregate Method Comparison}
+
+Table~\ref{tab:complete_methods} expands the family-level summary to the
+specific evaluated methods. The strongest non-proposed aggregate results
+were obtained by the multiview references MAXVAR-GCCA and MvDA, with mean
+macro-F1 values of 0.9515 and 0.9504. Among the individual final-embedding
+classifiers, kNN reached 0.9469. HMDF-kNN obtained the highest listed mean
+accuracy, macro-F1, and balanced accuracy at 0.9683, 0.9616, and 0.9597,
+respectively. These are averages across dataset-backbone contexts and should
+be interpreted as aggregate evidence rather than universal context-level
+superiority.
+
+\input{tables/table_complete_methods}
+
+Methods whose principal reference is from 2020 onward include author and
+year directly in the method name for clarity. Stage-level adaptation details,
+hyperparameter grids, and complete per-context outputs are documented in the
+supplementary artifacts. The public code location remains a submission task:
+\texttt{[GitHub repository placeholder]}.
+
+\FloatBarrier
+\clearpage
+\subsection{Context-Level Robustness}
+
+Context-level analyses were used as robustness checks rather than as the
+primary narrative. The aggregate advantage of HMDF-kNN was not uniform
+across all dataset-backbone contexts; most paired comparisons were favorable
+or practically close under the 0.005 macro-F1 margin, while only a small
+number favored the validation-selected reference method. Paired bootstrap
+differences were statistically resolved in only two contexts after Holm
+correction, and none significantly favored a reference method among the 38
+contexts with aligned prediction artifacts. This supports a cautious
+aggregate interpretation rather than a claim of universal superiority.
+Dataset-level summaries, the complete context heatmap, numerical and
+statistical outcome tables, class-level confusion matrices, and the
+qualitative fused-distance visualization are provided as supplementary
+artifacts.
+
+\textit{External-domain control:} HAM10000 was evaluated only to stress-test
+the post-hoc procedure outside brain MRI. It is excluded from brain-MRI
+averages, context counts, and inferential tests; the main claims remain
+restricted to the five brain-MRI datasets.
+
+\end{document}
