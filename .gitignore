@@ -1,0 +1,48 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Medical images, model weights, and large derived arrays
+data/raw/
+data/processed/
+datasets/
+checkpoints/
+embeddings/
+artifacts/
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+
+# Local experiment outputs
+results/runs/
+logs/
+tmp/
+temp/
+
+# LaTeX build products
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+build/
+build_logs/
+audit_build/
+
+# Archives
+*.zip
+*.7z
+*.rar

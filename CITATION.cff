@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated HMDF-kNN manuscript."
+title: "Hierarchical Multilayer Distance Fusion kNN for Brain Tumor MRI Classification from Internal CNN Embeddings"
+type: software
+authors:
+  - family-names: Mendoza
+    given-names: Joaquin
+  - family-names: Veloz
+    given-names: Alejandro
+date-released: 2026-06-12
+repository-code: "REPLACE_WITH_GITHUB_REPOSITORY_URL"
+license: "LicenseRef-Pending"
